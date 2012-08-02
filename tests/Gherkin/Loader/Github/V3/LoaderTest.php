@@ -32,10 +32,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     public function getResourceNames()
     {
         return array(
-            array('test', false),
+            array('test', true),
             array('github:', true),
             array('github://', true),
-            array('test-github://', false),
+            array('test-github://', true),
             array('test-github.com', true),
         );
     }

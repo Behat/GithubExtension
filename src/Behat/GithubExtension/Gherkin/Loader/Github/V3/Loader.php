@@ -41,9 +41,7 @@ class Loader extends AbstractFileLoader
      */
     public function supports($resource)
     {
-        return 0     === strpos($resource, 'github') ||
-               false !== strpos($resource, 'github.com')
-        ;
+        return true;
     }
 
     /**
@@ -56,22 +54,31 @@ class Loader extends AbstractFileLoader
     public function load($resource)
     {
         if ($this->cache->isFresh($this->getCacheKey(), $this->getLastModifiedIssuesTimestamp())) {
-           return $this->cache->read($this->getCacheKey());
+           return $this->filter($this->cache->read($this->getCacheKey()), $resource);
         }
 
-        $issues = $this->getIssues($resource);
+        $issues = $this->getIssues();
 
         $features = $this->createFeatureNodes($issues);
         $this->cache->write($this->getCacheKey(), $features);
 
-        return $features;
+        return $this->filter($features, $resource);
     }
 
-    protected function getIssues($resource)
+    private function filter(array $features, $resource)
     {
-        $parameters = $this->getParameters($resource);
+        if (false === strpos($resource, 'github.com')) {
+            return $features;
+        }
 
-        return $this->client->api('issue')->all($this->user, $this->repository, $parameters);
+        return array_filter($features, function($feature) use($resource) {
+            return $feature->getFile() === $resource;
+        });
+    }
+
+    protected function getIssues()
+    {
+        return $this->client->api('issue')->all($this->user, $this->repository);
     }
 
     private function getCacheKey()
@@ -87,16 +94,6 @@ class Loader extends AbstractFileLoader
 
         return strtotime($headers['Last-Modified']);
     }
-
-    protected function getParameters($resource)
-    {
-        $parsedUrl = parse_url($resource);
-        $queryString = @$parsedUrl['query'];
-        parse_str($queryString, $parameters);
-
-        return $parameters;
-    }
-
 
     private function createFeatureNodes(array $issues)
     {
@@ -120,7 +117,21 @@ class Loader extends AbstractFileLoader
         // clean issue content to get only parseable features
         $body = str_replace(['```gherkin', '``` gherkin', '```'], '', $issue['body']);
 
-        return $this->parser->parse($body, $issue['html_url']);
+        $node = $this->parser->parse($body, $issue['html_url']);
+
+        foreach ($issue['labels'] as $label) {
+            $node->addTag($label['name']);
+        }
+
+        if (isset($issue['assignee']['login'])) {
+            $node->addTag('assignee:'.str_replace(array(' ', '@'), '_', $issue['assignee']['login']));
+        }
+
+        if (isset($issue['milestone']['title'])) {
+            $node->addTag('milestone:'.str_replace(array(' ', '@'), '_', $issue['milestone']['title']));
+        }
+
+        return $node;
     }
 }
 
