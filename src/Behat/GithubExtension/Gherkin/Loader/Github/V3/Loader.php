@@ -55,13 +55,11 @@ class Loader extends AbstractFileLoader
      */
     public function load($resource)
     {
-        $parameters = $this->getParameters($resource);
-
         if ($this->cache->isFresh($this->getCacheKey(), $this->getLastModifiedIssuesTimestamp())) {
            return $this->cache->read($this->getCacheKey());
         }
 
-        $issues = $this->getIssues();
+        $issues = $this->getIssues($resource);
 
         $features = $this->createFeatureNodes($issues);
         $this->cache->write($this->getCacheKey(), $features);
@@ -69,8 +67,10 @@ class Loader extends AbstractFileLoader
         return $features;
     }
 
-    protected function getIssues()
+    protected function getIssues($resource)
     {
+        $parameters = $this->getParameters($resource);
+
         return $this->client->api('issue')->all($this->user, $this->repository, $parameters);
     }
 
