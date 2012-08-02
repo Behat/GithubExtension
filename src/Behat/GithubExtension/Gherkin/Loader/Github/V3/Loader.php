@@ -41,7 +41,9 @@ class Loader extends AbstractFileLoader
      */
     public function supports($resource)
     {
-        return 0 === strpos($resource, 'github');
+        return 0     === strpos($resource, 'github') ||
+               false !== strpos($resource, 'github.com')
+        ;
     }
 
     /**
@@ -55,19 +57,29 @@ class Loader extends AbstractFileLoader
     {
         $parameters = $this->getParameters($resource);
 
-        if ($this->cache->isFresh($this->user.$this->repository, $this->getLastModifiedIssuesTimestamp())) {
-           return $this->cache->read($this->user.$this->repository);
+        if ($this->cache->isFresh($this->getCacheKey(), $this->getLastModifiedIssuesTimestamp())) {
+           return $this->cache->read($this->getCacheKey());
         }
 
-        $issues = $this->client->api('issue')->all($this->user, $this->repository, $parameters);
+        $issues = $this->getIssues();
 
         $features = $this->createFeatureNodes($issues);
-        $this->cache->write($this->user.$this->repository, $features);
+        $this->cache->write($this->getCacheKey(), $features);
 
         return $features;
     }
 
-    private function getLastModifiedIssuesTimestamp()
+    protected function getIssues()
+    {
+        return $this->client->api('issue')->all($this->user, $this->repository, $parameters);
+    }
+
+    private function getCacheKey()
+    {
+        return $this->user.'_'.$this->repository;
+    }
+
+    protected function getLastModifiedIssuesTimestamp()
     {
         $url = 'repos/'.urlencode($this->user).'/'.urlencode($this->repository).'/issues';
         $httpClient = $this->client->getHttpClient();
@@ -76,20 +88,28 @@ class Loader extends AbstractFileLoader
         return strtotime($headers['Last-Modified']);
     }
 
-    private function getParameters($resource)
+    protected function getParameters($resource)
     {
         $parsedUrl = parse_url($resource);
         $queryString = @$parsedUrl['query'];
         parse_str($queryString, $parameters);
 
-        return $parameters ?: ['labels' => 'Feature'];
+        return $parameters;
     }
 
 
     private function createFeatureNodes(array $issues)
     {
+        $features = [];
         foreach ($issues as $issue) {
-            $features[] = $this->createFeatureNode($issue);
+            try {
+                $features[] = $this->createFeatureNode($issue);
+            }
+            catch(ParserException $e) {
+                // @TODO log this to output
+                var_dump($e->getMessage(), $issue['body']);
+                continue;
+            }
         }
 
         return $features;
@@ -97,17 +117,10 @@ class Loader extends AbstractFileLoader
 
     private function createFeatureNode(array $issue)
     {
+        // clean issue content to get only parseable features
         $body = str_replace(['```gherkin', '``` gherkin', '```'], '', $issue['body']);
 
-        try {
-            $feature = $this->parser->parse($body, 'github:'.$issue['number']);
-        }
-        catch(ParserException $e) {
-            var_dump($e->getMessage(), $issue['body']);
-            continue;
-        }
-
-        return $feature;
+        return $this->parser->parse($body, 'github:'.$issue['number']);
     }
 }
 
