@@ -1,0 +1,37 @@
+{
+    "name":         "behat/github-extension",
+    "description":  "Github loader for behat",
+    "keywords":     ["BDD", "Behat", "Symfony2", "Github"],
+    "homepage":     "http://behat.org/",
+    "type":         "library",
+    "license":      "MIT",
+    "authors":      [
+        {
+            "name":      "Klein Florian",
+            "email":     "florian.klein@free.fr",
+            "homepage":  "http://github.com/docteuklein"
+        },
+        {
+            "name":      "Quemener Gildas",
+            "email":     "gildas.quemener@gmail.com",
+            "homepage":  "http://github.com/gquemener"
+        },
+        {
+            "name":      "Konstantin Kudryashov",
+            "email":     "ever.zet@gmail.com",
+            "homepage":  "http://everzet.com"
+        }
+    ],
+
+    "minimum-stability": "dev",
+
+    "require": {
+        "php":                       ">=5.4",
+        "behat/behat":               ">=2.4.0,<2.5.0-dev",
+        "knplabs/github-api":        "dev-master"
+    },
+
+    "autoload": {
+        "psr-0": { "Behat\\GithubExtension": "src/" }
+    }
+}
