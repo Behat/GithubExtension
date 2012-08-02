@@ -120,7 +120,7 @@ class Loader extends AbstractFileLoader
         // clean issue content to get only parseable features
         $body = str_replace(['```gherkin', '``` gherkin', '```'], '', $issue['body']);
 
-        return $this->parser->parse($body, 'github:'.$issue['number']);
+        return $this->parser->parse($body, $issue['html_url']);
     }
 }
 

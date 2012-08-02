@@ -15,17 +15,17 @@ class FeatureListener implements EventSubscriberInterface
 {
     protected $client;
     protected $user;
-    protected $password;
     protected $repository;
     protected $auth;
+    protected $urlPattern;
 
-    public function __construct(Client $client, $user, $password, $repository, array $auth)
+    public function __construct(Client $client, $user, $repository, array $auth, $urlPattern)
     {
         $this->client     = $client;
         $this->user       = $user;
-        $this->password   = $password;
         $this->repository = $repository;
         $this->auth       = $auth;
+        $this->urlPattern = $urlPattern;
     }
 
     public static function getSubscribedEvents()
@@ -35,25 +35,30 @@ class FeatureListener implements EventSubscriberInterface
 
     public function afterScenario(ScenarioEvent $event)
     {
-        $feature = $event->getScenario()->getFeature();
-        if (0 !== strpos($feature->getFile(), 'github:')) {
+        $scenario = $event->getScenario();
+        $feature = $scenario->getFeature();
+        if (!preg_match($this->urlPattern, $feature->getFile(), $matches)) {
             return;
         }
-
-        $issueNumber = substr($feature->getFile(), 7);
+        $issueNumber = $matches[3];
 
         if (StepEvent::FAILED === $event->getResult()) {
-            $this->postComment('Scenario failed', $issueNumber);
+            $this->postComment(sprintf('Scenario "%s" failed', $scenario->getTitle()), $issueNumber);
         }
 
         if (StepEvent::PASSED === $event->getResult()) {
-            $this->postComment('Scenario passed', $issueNumber);
+            $this->postComment(sprintf('Scenario "%s" passed', $scenario->getTitle()), $issueNumber);
         }
     }
 
     private function postComment($message, $number)
     {
-        $this->client->authenticate($this->auth['token'], $this->auth['token'], Client::AUTH_HTTP_TOKEN);
+        if (isset($this->auth['token'])) {
+            $this->client->authenticate($this->auth['token'], $this->auth['token'], Client::AUTH_HTTP_TOKEN);
+        }
+        else {
+            $this->client->authenticate($this->auth['username'], $this->auth['password'], Client::AUTH_HTTP_PASSWORD);
+        }
 
         return $this->client->api('issue')->comments()->create($this->user, $this->repository, $number, ['body' => $message]);
     }
