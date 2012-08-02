@@ -1,0 +1,144 @@
+[{
+  "body": "The text should be \"Welcome back John!\" in #2",
+  "assignee": null,
+  "user": {
+    "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+    "login": "docteurklein",
+    "url": "https://api.github.com/users/docteurklein",
+    "id": 109846,
+    "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+  },
+  "pull_request": {
+    "patch_url": null,
+    "diff_url": null,
+    "html_url": null
+  },
+  "closed_at": null,
+  "labels": [
+
+  ],
+  "comments": 0,
+  "milestone": {
+    "closed_issues": 0,
+    "description": "",
+    "creator": {
+      "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+      "login": "docteurklein",
+      "url": "https://api.github.com/users/docteurklein",
+      "id": 109846,
+      "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+    },
+    "title": "Sprint 1",
+    "created_at": "2012-08-01T15:32:54Z",
+    "state": "open",
+    "url": "https://api.github.com/repos/docteurklein/dot-files/milestones/1",
+    "number": 1,
+    "id": 155164,
+    "due_on": "2012-08-13T07:00:00Z",
+    "open_issues": 3
+  },
+  "title": "Wrong successful text on login",
+  "created_at": "2012-08-01T14:54:01Z",
+  "state": "open",
+  "updated_at": "2012-08-01T15:33:16Z",
+  "html_url": "https://github.com/docteurklein/dot-files/issues/4",
+  "url": "https://api.github.com/repos/docteurklein/dot-files/issues/4",
+  "number": 4,
+  "id": 5969819
+}, {
+  "body": "The text should be \"Login\" insead of \"Connect\" in #2.",
+  "assignee": null,
+  "user": {
+    "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+    "login": "docteurklein",
+    "url": "https://api.github.com/users/docteurklein",
+    "id": 109846,
+    "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+  },
+  "pull_request": {
+    "patch_url": null,
+    "diff_url": null,
+    "html_url": null
+  },
+  "closed_at": null,
+  "labels": [
+
+  ],
+  "comments": 0,
+  "milestone": {
+    "closed_issues": 0,
+    "description": "",
+    "creator": {
+      "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+      "login": "docteurklein",
+      "url": "https://api.github.com/users/docteurklein",
+      "id": 109846,
+      "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+    },
+    "title": "Sprint 1",
+    "created_at": "2012-08-01T15:32:54Z",
+    "state": "open",
+    "url": "https://api.github.com/repos/docteurklein/dot-files/milestones/1",
+    "number": 1,
+    "id": 155164,
+    "due_on": "2012-08-13T07:00:00Z",
+    "open_issues": 3
+  },
+  "title": "Wrong button on login page",
+  "created_at": "2012-08-01T14:52:45Z",
+  "state": "open",
+  "updated_at": "2012-08-01T15:33:16Z",
+  "html_url": "https://github.com/docteurklein/dot-files/issues/3",
+  "url": "https://api.github.com/repos/docteurklein/dot-files/issues/3",
+  "number": 3,
+  "id": 5969785
+}, {
+  "body": "``` gherkin\nFeature: Authenticate\n\n@javascript\nScenario: Successfully logon\nGiven I am on the homepage\nWhen I fill in \"login\" with \"john\"\nAnd I fill in \"password\" with \"johnpass\"\nAnd I press \"Connect\"\nThen I should see \"Welcome John!\"\n```",
+  "assignee": null,
+  "user": {
+    "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+    "login": "docteurklein",
+    "url": "https://api.github.com/users/docteurklein",
+    "id": 109846,
+    "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+  },
+  "pull_request": {
+    "patch_url": null,
+    "diff_url": null,
+    "html_url": null
+  },
+  "closed_at": null,
+  "labels": [{
+    "color": "e10c02",
+    "name": "Feature",
+    "url": "https://api.github.com/repos/docteurklein/dot-files/labels/Feature"
+  }],
+  "comments": 1,
+  "milestone": {
+    "closed_issues": 0,
+    "description": "",
+    "creator": {
+      "gravatar_id": "d18e2c9cdd3add22170bbd4ec3937176",
+      "login": "docteurklein",
+      "url": "https://api.github.com/users/docteurklein",
+      "id": 109846,
+      "avatar_url": "https://secure.gravatar.com/avatar/d18e2c9cdd3add22170bbd4ec3937176?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png"
+    },
+    "title": "Sprint 1",
+    "created_at": "2012-08-01T15:32:54Z",
+    "state": "open",
+    "url": "https://api.github.com/repos/docteurklein/dot-files/milestones/1",
+    "number": 1,
+    "id": 155164,
+    "due_on": "2012-08-13T07:00:00Z",
+    "open_issues": 3
+  },
+  "title": "Authenticate on the website",
+  "created_at": "2012-08-01T14:50:43Z",
+  "state": "open",
+  "updated_at": "2012-08-02T11:12:23Z",
+  "html_url": "https://github.com/docteurklein/dot-files/issues/2",
+  "url": "https://api.github.com/repos/docteurklein/dot-files/issues/2",
+  "number": 2,
+  "id": 5969730
+}]

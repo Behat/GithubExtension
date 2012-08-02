@@ -61,7 +61,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
         $mock->expects($this->any())
             ->method('getIssues')
-            ->will($this->returnValue(array()))
+            ->will($this->returnValue(json_decode(file_get_contents(__DIR__.'/mock.json'), true)))
         ;
 
         return $mock;
