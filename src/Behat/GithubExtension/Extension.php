@@ -25,12 +25,19 @@ class Extension implements ExtensionInterface
         if (isset($config['user'])) {
             $container->setParameter('behat.github_extension.user', $config['user']);
         }
-        if (isset($config['password'])) {
-            $container->setParameter('behat.github_extension.password', $config['password']);
-        }
         if (isset($config['repository'])) {
             $container->setParameter('behat.github_extension.repository', $config['repository']);
         }
+        if (isset($config['github_issue_html_url_pattern'])) {
+            $container->setParameter('behat.github_extension.repository', $config['repository']);
+        }
+
+        if (!$config['write_comments']) {
+            return;
+        }
+
+        $loader->load('listener.xml');
+
         if (isset($config['auth'])) {
             $auth = [
                 'username' => $config['auth']['username'],
@@ -58,6 +65,12 @@ class Extension implements ExtensionInterface
                 end()->
                 scalarNode('password')->
                     defaultNull()->
+                end()->
+                scalarNode('github_issue_html_url_pattern')->
+                    defaultValue('#^https?://github.com/(.*)/(.*)/issues/(\d+)#')->
+                end()->
+                booleanNode('write_comments')->
+                    defaultValue(false)->
                 end()->
                 arrayNode('auth')->
                     children()->

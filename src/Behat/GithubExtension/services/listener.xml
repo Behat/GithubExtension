@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="behat.github_extension.listener.feature.class">Behat\GithubExtension\Listener\FeatureListener</parameter>
+    </parameters>
+
+    <services>
+
+        <service id="behat.github_extension.listener.feature" class="%behat.github_extension.listener.feature.class%">
+            <argument type="service" id="behat.github_extension.github.client" />
+            <argument type="string">%behat.github_extension.user%</argument>
+            <argument type="string">%behat.github_extension.repository%</argument>
+            <argument type="string">%behat.github_extension.auth%</argument>
+            <argument type="string">%behat.github_extension.github_issue.html_url_pattern%</argument>
+            <tag name="behat.event_subscriber" priority="0" />
+        </service>
+
+    </services>
+
+</container>
