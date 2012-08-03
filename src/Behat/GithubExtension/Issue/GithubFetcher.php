@@ -30,15 +30,6 @@ class GithubFetcher implements FetcherInterface
 
     public function getIssues()
     {
-        $timestamp = $this->cache->getLastModifiedIssuesTimestamp();
-        $parameters = array();
-        if ($timestamp) {
-            $this->client->setHeaders(array('If-Modified-Since', date('c', $timestamp)));
-            $parameters = array(
-                'since' => date('c', $timestamp),
-            );
-        }
-
         $issues = $this->fetchIssues();
         $this->cache->updateMeta();
 
@@ -51,6 +42,15 @@ class GithubFetcher implements FetcherInterface
 
     protected function fetchIssues()
     {
+        $timestamp = $this->cache->getLastModifiedIssuesTimestamp();
+        $parameters = array();
+        if ($timestamp) {
+            $this->client->setHeaders(array('If-Modified-Since', date('c', $timestamp)));
+            $parameters = array(
+                'since' => date('c', $timestamp),
+            );
+        }
+
         return $this->client->api('issue')->all($this->user, $this->repository, $parameters);
     }
 
