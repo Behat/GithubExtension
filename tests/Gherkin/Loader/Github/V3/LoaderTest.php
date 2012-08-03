@@ -29,7 +29,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $loader->load('github'), 'Loads an array');
     }
 
-    public function getResourceNames()
+    public static function getResourceNames()
     {
         return array(
             array('test', true),
