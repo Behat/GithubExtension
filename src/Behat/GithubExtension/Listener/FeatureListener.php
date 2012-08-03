@@ -60,7 +60,7 @@ class FeatureListener implements EventSubscriberInterface
             $this->client->authenticate($this->auth['username'], $this->auth['password'], Client::AUTH_HTTP_PASSWORD);
         }
 
-        return $this->client->api('issue')->comments()->create($this->user, $this->repository, $number, ['body' => $message]);
+        return $this->client->api('issue')->comments()->create($this->user, $this->repository, $number, array('body' => $message));
     }
 }
 

@@ -17,10 +17,12 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     const TMP_DIR = 'tmp';
 
     private $tmpDir;
+    private $feature;
 
     public function setUp()
     {
         $this->tmpDir = sprintf('%s/%s', __DIR__, self::TMP_DIR);
+        $this->feature = new FeatureNode;
 
         if (!is_dir($this->tmpDir)) {
             mkdir($this->tmpDir);
@@ -42,25 +44,11 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     public static function getNames()
     {
         return array(
-            array('test1'          , '/test1')          ,
-            array('/test1'         , '/test1')          ,
-            array('/test2'         , '/test2')          ,
-            array('test/test/test' , '/test/test/test') ,
+            array('test1'          , '/features/test1')          ,
+            array('/test1'         , '/features/test1')          ,
+            array('/test2'         , '/features/test2')          ,
+            array('test/test/test' , '/features/test/test/test') ,
         );
-    }
-
-    /**
-     * @test
-     */
-    public function should_say_if_fresh()
-    {
-        $cache = new FeatureSuiteCache($this->tmpDir);
-
-        touch($this->tmpDir.'/existant');
-
-        $this->assertFalse($cache->isFresh('inexistant', time()), 'inexistant cache file is not fresh');
-        $this->assertTrue($cache->isFresh('existant', time() - 10), 'existant cache file is fresh');
-        $this->assertFalse($cache->isFresh('existant', time() + 10), 'existant cache file which reprensenting a modified resource since is not fresh');
     }
 
     /**
@@ -70,10 +58,8 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     {
         $cache = new FeatureSuiteCache($this->tmpDir);
 
-        $features = array(new FeatureNode);
-
-        $bytes = $cache->write('written_cache', $features);
-        $this->assertEquals(strlen(serialize($features)), $bytes, 'writes to filesystem');
+        $bytes = $cache->write($this->feature);
+        $this->assertEquals(strlen(serialize($this->feature)), $bytes, 'writes to filesystem');
     }
 
     /**
@@ -84,7 +70,7 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     {
         $cache = new FeatureSuiteCache($this->tmpDir);
 
-        $features = $cache->read('written_cache');
+        $features = $cache->all();
         $this->assertInternalType('array', $features, 'Reads an array of FeatureNode objects');
         $this->assertInstanceOf('Behat\Gherkin\Node\FeatureNode', $features[0], 'Contains FeatureNode object');
     }

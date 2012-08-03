@@ -39,11 +39,11 @@ class Extension implements ExtensionInterface
         $loader->load('listener.xml');
 
         if (isset($config['auth'])) {
-            $auth = [
+            $auth = array(
                 'username' => $config['auth']['username'],
                 'password' => $config['auth']['password'],
                 'token'    => $config['auth']['token'],
-            ];
+            );
             $container->setParameter('behat.github_extension.auth', $auth);
         }
     }
@@ -91,6 +91,6 @@ class Extension implements ExtensionInterface
 
     public function getCompilerPasses()
     {
-        return [];
+        return array();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Gherkin\Loader\Github\V3;
 
+use Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader;
+
 use Behat\Gherkin\Node\FeatureNode;
 
 use Behat\GithubExtension\Cache\FeatureSuiteCache;
@@ -42,31 +44,30 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     private function getLoader()
     {
-        $mock = $this->getMockBuilder('Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader')
+        return new Loader($this->getFetcher());
+    }
+
+    private function getFetcher()
+    {
+        $mock = $this->getMockBuilder('Behat\GithubExtension\Issue\GithubFetcher')
             ->setConstructorArgs(array(
-                $this->getParser(),
                 $this->getClient(),
+                $this->getParser(),
                 'test',
                 'test',
-                new FeatureSuiteCache('/tmp')
+                new FeatureSuiteCache('/tmp'),
             ))
-            ->setMethods(array('getLastModifiedIssuesTimestamp', 'getIssues'))
+            ->setMethods(array('fetchIssues'))
             ->getMock()
         ;
 
         $mock->expects($this->any())
-            ->method('getLastModifiedIssuesTimestamp')
-            ->will($this->returnValue(time()))
-        ;
-
-        $mock->expects($this->any())
-            ->method('getIssues')
+            ->method('fetchIssues')
             ->will($this->returnValue(json_decode(file_get_contents(__DIR__.'/mock.json'), true)))
         ;
 
         return $mock;
     }
-
     private function getParser()
     {
         $mock = $this->getMockBuilder('Behat\Gherkin\Parser')

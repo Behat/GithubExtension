@@ -2,6 +2,8 @@
 
 namespace Behat\GithubExtension\Cache;
 
+use Behat\Gherkin\Node\FeatureNode;
+
 class FeatureSuiteCache
 {
     protected $path;
@@ -11,28 +13,54 @@ class FeatureSuiteCache
         $this->path = $path;
     }
 
-    public function isFresh($resource, $timestamp)
+    public function read($path)
     {
-        if (!file_exists($this->getPathFor($resource))) {
-            return false;
+        return unserialize(file_get_contents($path));
+    }
+
+    public function all()
+    {
+        if (!$handler = @opendir($this->getPathFor(''))) {
+            return array();
         }
 
-        return filemtime($this->getPathFor($resource)) > $timestamp;
+        $features = array();
+        while (false !== $file = readdir($handler)) {
+            if (in_array($file,  array('.', '..'))) {
+                continue;
+            }
+
+            $features[] = $this->read($this->getPathFor($file));
+        }
+
+        return $features;
     }
 
-    public function read($resource)
+    public function write(FeatureNode $feature)
     {
-        return unserialize(file_get_contents($this->getPathFor($resource)));
+        return file_put_contents($this->getPathFor(md5($feature->getFile())), serialize($feature));
     }
 
-    public function write($resource, $value)
+    public function updateMeta()
     {
-        return file_put_contents($this->getPathFor($resource), serialize($value));
+        return touch($this->getMetaFilePath());
     }
 
     public function getPathFor($resource)
     {
-        return rtrim($this->path, '/').'/'.trim($resource, '/');
+        return rtrim($this->path, '/').'/features/'.trim($resource, '/');
+    }
+
+    public function getLastModifiedIssuesTimestamp()
+    {
+        if (file_exists($this->getMetaFilePath())) {
+            return filemtime($this->getMetaFilePath());
+        }
+    }
+
+    private function getMetaFilePath()
+    {
+        return rtrim($this->path, '/').'/issues.meta';
     }
 }
 

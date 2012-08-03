@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="behat.github_extension.issue.github_fetcher.class">Behat\GithubExtension\Issue\GithubFetcher</parameter>
         <parameter key="behat.github_extension.github.client.class">Github\Client</parameter>
-        <parameter key="behat.github_extension.github.http_client.class">Behat\GithubExtension\Github\HttpClient</parameter>
         <parameter key="behat.github_extension.guerkin_loader.class">Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.class">Behat\GithubExtension\Cache\FeatureSuiteCache</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.path">/tmp</parameter>
@@ -19,19 +19,19 @@
     <services>
 
         <service id="behat.github_extension.gherkin_loader" class="%behat.github_extension.guerkin_loader.class%">
-            <argument type="service" id="gherkin.parser" />
-            <argument type="service" id="behat.github_extension.github.client" />
-            <argument type="string">%behat.github_extension.user%</argument>
-            <argument type="string">%behat.github_extension.repository%</argument>
-            <argument type="service" id="behat.github_extension.cache.feature_suite" />
+            <argument type="service" id="behat.github_extension.issue.github_fetcher" />
             <tag name="gherkin.loader" />
         </service>
 
-        <service id="behat.github_extension.github.client" class="%behat.github_extension.github.client.class%">
-            <argument type="service" id="behat.github_extension.github.http_client" />
+        <service id="behat.github_extension.issue.github_fetcher" class="%behat.github_extension.issue.github_fetcher.class%">
+            <argument type="service" id="behat.github_extension.github.client" />
+            <argument type="service" id="gherkin.parser" />
+            <argument type="string">%behat.github_extension.user%</argument>
+            <argument type="string">%behat.github_extension.repository%</argument>
+            <argument type="service" id="behat.github_extension.cache.feature_suite" />
         </service>
 
-        <service id="behat.github_extension.github.http_client" class="%behat.github_extension.github.http_client.class%">
+        <service id="behat.github_extension.github.client" class="%behat.github_extension.github.client.class%">
         </service>
 
         <service id="behat.github_extension.cache.feature_suite" class="%behat.github_extension.cache.feature_suite.class%">
