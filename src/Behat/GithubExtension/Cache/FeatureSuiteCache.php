@@ -38,7 +38,12 @@ class FeatureSuiteCache
 
     public function write(FeatureNode $feature)
     {
-        return file_put_contents($this->getPathFor(md5($feature->getFile())), serialize($feature));
+        $path = $this->getPathFor(md5($feature->getFile()));
+        if (!is_dir(dirname($path))) {
+            mkdir(dirname($path), 0777, true);
+        }
+
+        return file_put_contents($path, serialize($feature));
     }
 
     public function updateMeta()
