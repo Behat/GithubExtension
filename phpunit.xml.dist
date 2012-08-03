@@ -19,4 +19,13 @@
         </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+            <exclude>
+                <directory>vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>-
+
 </phpunit>
