@@ -29,6 +29,24 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function tearDown()
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($this->tmpDir),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $path) {
+            if (basename($path->__toString()) !== '.' && basename($path->__toString()) !== '..') {
+                if ($path->isDir()) {
+                    rmdir($path->__toString());
+                } else {
+                    unlink($path->__toString());
+                }
+            }
+        }
+    }
+
     /**
      * @test
      * @dataProvider getNames
@@ -36,7 +54,9 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     public function should_get_cache_path($input, $expected)
     {
         $cache = new FeatureSuiteCache($this->tmpDir);
-        $path = $cache->getPathFor($input);
+        $feature = new FeatureNode();
+        $feature->setFile($input);
+        $path = $cache->getPathFor($feature);
 
         $this->assertEquals($this->tmpDir.$expected, $path, 'Path is well caclulcated');
     }
@@ -44,10 +64,10 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
     public static function getNames()
     {
         return array(
-            array('test1'          , '/features/test1')          ,
-            array('/test1'         , '/features/test1')          ,
-            array('/test2'         , '/features/test2')          ,
-            array('test/test/test' , '/features/test/test/test') ,
+            array('test1'          , '/features/5a105e8b9d40e1329780d62ea2265d8a')          ,
+            array('/test1'         , '/features/c919a18cd1e1254f560bb64acc581574')          ,
+            array('/test2'         , '/features/bdbc5e82b59e2d430975cdd123931580')          ,
+            array('test/test/test' , '/features/68da1fb7d3d47095d0140bb8ea457c62') ,
         );
     }
 
@@ -60,16 +80,16 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
 
         $bytes = $cache->write($this->feature);
         $this->assertEquals(strlen(serialize($this->feature)), $bytes, 'writes to filesystem');
+
+        return $cache;
     }
 
     /**
      * @test
      * @depends should_write_array_of_scenario_nodes_to_filsesystem
      */
-    public function should_read_array_of_scenario_nodes()
+    public function should_read_array_of_scenario_nodes(FeatureSuiteCache $cache)
     {
-        $cache = new FeatureSuiteCache($this->tmpDir);
-
         $features = $cache->all();
         $this->assertInternalType('array', $features, 'Reads an array of FeatureNode objects');
         $this->assertInstanceOf('Behat\Gherkin\Node\FeatureNode', $features[0], 'Contains FeatureNode object');

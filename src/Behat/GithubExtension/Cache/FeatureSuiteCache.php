@@ -18,9 +18,14 @@ class FeatureSuiteCache
         return unserialize(file_get_contents($path));
     }
 
+    public function write(FeatureNode $feature)
+    {
+        return file_put_contents($this->getPathFor($feature), serialize($feature));
+    }
+
     public function all()
     {
-        if (!$handler = @opendir($this->getPathFor(''))) {
+        if (!$handler = opendir($this->getFeatureDirPath())) {
             return array();
         }
 
@@ -30,30 +35,15 @@ class FeatureSuiteCache
                 continue;
             }
 
-            $features[] = $this->read($this->getPathFor($file));
+            $features[] = $this->read(sprintf('%s%s', $this->getFeatureDirPath(), $file ));
         }
 
         return $features;
     }
 
-    public function write(FeatureNode $feature)
-    {
-        $path = $this->getPathFor(md5($feature->getFile()));
-        if (!is_dir(dirname($path))) {
-            mkdir(dirname($path), 0777, true);
-        }
-
-        return file_put_contents($path, serialize($feature));
-    }
-
     public function updateMeta()
     {
         return touch($this->getMetaFilePath());
-    }
-
-    public function getPathFor($resource)
-    {
-        return rtrim($this->path, '/').'/features/'.trim($resource, '/');
     }
 
     public function getLastModifiedIssuesTimestamp()
@@ -63,9 +53,29 @@ class FeatureSuiteCache
         }
     }
 
+    public function getPathFor(FeatureNode $feature)
+    {
+        return sprintf('%s%s', $this->getFeatureDirPath(), $this->getCacheKey($feature));
+    }
+
+    private function getFeatureDirPath()
+    {
+        $path = sprintf('%s/features/', rtrim($this->path, '/'));
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        return $path;
+    }
+
     private function getMetaFilePath()
     {
-        return rtrim($this->path, '/').'/issues.meta';
+        return sprintf('%s/issues.meta', rtrim($this->path, '/'));
+    }
+
+    private function getCacheKey(FeatureNode $feature)
+    {
+        return null !== $feature ? md5($feature->getFile()) : '';
     }
 }
-

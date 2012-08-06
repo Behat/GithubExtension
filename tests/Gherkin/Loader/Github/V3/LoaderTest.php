@@ -23,12 +23,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider getFilteredResourcesNames
      */
-    public function should_load_from_github()
+    public function should_load_from_github($input)
     {
         $loader = $this->getLoader();
 
-        $this->assertInternalType('array', $loader->load('github'), 'Loads an array');
+        $this->assertInternalType('array', $loader->load($input), 'Loads an array');
     }
 
     public static function getResourceNames()
@@ -39,6 +40,15 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             array('github://', true),
             array('test-github://', true),
             array('test-github.com', true),
+        );
+    }
+
+    public static function getFilteredResourcesNames()
+    {
+        return array(
+            array(''),
+            array('github'),
+            array('https://github.com/issue/2'),
         );
     }
 
