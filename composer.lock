@@ -1,5 +1,5 @@
 {
-    "hash": "0163156bf9cdc864ec8566c05c0613d6",
+    "hash": "a22242f127cc6611c23091436fe948b5",
     "packages": [
         {
             "package": "behat/behat",
@@ -102,6 +102,18 @@
             "version": "dev-master",
             "source-reference": "v2.1.0-RC1",
             "commit-date": "1342347231"
+        },
+        {
+            "package": "twig/twig",
+            "version": "dev-master",
+            "alias-pretty-version": "1.9.x-dev",
+            "alias-version": "1.9.9999999.9999999-dev"
+        },
+        {
+            "package": "twig/twig",
+            "version": "dev-master",
+            "source-reference": "51c866f415bbee670cd9ba13591307bce8dabdca",
+            "commit-date": "1343464333"
         }
     ],
     "packages-dev": null,

@@ -37,12 +37,14 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
         );
 
         foreach ($iterator as $path) {
-            if (basename($path->__toString()) !== '.' && basename($path->__toString()) !== '..') {
-                if ($path->isDir()) {
-                    rmdir($path->__toString());
-                } else {
-                    unlink($path->__toString());
-                }
+            if (in_array(basename($path->__toString()),  array('.', '..'))) {
+                continue;
+            }
+
+            if ($path->isDir()) {
+                rmdir($path->__toString());
+            } else {
+                unlink($path->__toString());
             }
         }
     }
@@ -86,10 +88,12 @@ class FeatureSuiteCacheTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @depends should_write_array_of_scenario_nodes_to_filsesystem
      */
-    public function should_read_array_of_scenario_nodes(FeatureSuiteCache $cache)
+    public function should_read_array_of_scenario_nodes()
     {
+        $cache = new FeatureSuiteCache($this->tmpDir);
+        $bytes = $cache->write($this->feature);
+
         $features = $cache->all();
         $this->assertInternalType('array', $features, 'Reads an array of FeatureNode objects');
         $this->assertInstanceOf('Behat\Gherkin\Node\FeatureNode', $features[0], 'Contains FeatureNode object');

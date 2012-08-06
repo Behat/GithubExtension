@@ -4,12 +4,12 @@ namespace Behat\GithubExtension\Listener;
 
 use Github\Client;
 
-use Behat\GithubExtension\Gherkin\Node\GithubFeatureNode;
-
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Behat\Behat\Event\ScenarioEvent;
 use Behat\Behat\Event\StepEvent;
+use Behat\Behat\Event\SuiteEvent;
+use Behat\Behat\Event\FeatureEvent;
 
 class FeatureListener implements EventSubscriberInterface
 {
@@ -18,6 +18,7 @@ class FeatureListener implements EventSubscriberInterface
     protected $repository;
     protected $auth;
     protected $urlPattern;
+    protected $result;
 
     public function __construct(Client $client, $user, $repository, array $auth, $urlPattern)
     {
@@ -30,25 +31,43 @@ class FeatureListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array('afterScenario' => 'afterScenario');
+        $events = array('afterScenario', 'afterFeature');
+
+        return array_combine($events, $events);
     }
 
     public function afterScenario(ScenarioEvent $event)
     {
-        $scenario = $event->getScenario();
-        $feature = $scenario->getFeature();
+        $statuses = array(
+            StepEvent::PASSED      => 'Passed',
+            StepEvent::SKIPPED     => 'Skipped',
+            StepEvent::PENDING     => 'Pending',
+            StepEvent::UNDEFINED   => 'Undefined',
+            StepEvent::FAILED      => 'Failed'
+        );
+
+        $this->result[$event->getScenario()->getTitle()] =
+            $statuses[$event->getResult()];
+    }
+
+    public function afterFeature(FeatureEvent $event)
+    {
+        $feature = $event->getFeature();
+
         if (!preg_match($this->urlPattern, $feature->getFile(), $matches)) {
             return;
         }
         $issueNumber = $matches[3];
 
-        if (StepEvent::FAILED === $event->getResult()) {
-            $this->postComment(sprintf('Scenario "%s" failed', $scenario->getTitle()), $issueNumber);
-        }
+        $loader = new \Twig_Loader_Filesystem(__DIR__.'/../views');
+        $twig = new \Twig_Environment($loader, array());
 
-        if (StepEvent::PASSED === $event->getResult()) {
-            $this->postComment(sprintf('Scenario "%s" passed', $scenario->getTitle()), $issueNumber);
-        }
+        $comment = $twig->render('result.md.twig', array(
+            'run_date' => new \DateTime(),
+            'results' => $this->result,
+        ));
+
+        $response = $this->postComment($comment, $issueNumber);
     }
 
     private function postComment($message, $number)

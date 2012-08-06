@@ -15,6 +15,7 @@
             <argument type="string">%behat.github_extension.repository%</argument>
             <argument type="string">%behat.github_extension.auth%</argument>
             <argument type="string">%behat.github_extension.github_issue.html_url_pattern%</argument>
+            <argument type="service" id="behat.github_extension.cache.feature_suite" />
             <tag name="behat.event_subscriber" priority="0" />
         </service>
 
