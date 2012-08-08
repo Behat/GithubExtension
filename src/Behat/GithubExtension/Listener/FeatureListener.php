@@ -10,6 +10,7 @@ use Behat\Behat\Event\ScenarioEvent;
 use Behat\Behat\Event\StepEvent;
 use Behat\Behat\Event\SuiteEvent;
 use Behat\Behat\Event\FeatureEvent;
+use Behat\GithubExtension\Issue\CommentManager;
 
 class FeatureListener implements EventSubscriberInterface
 {
@@ -18,14 +19,8 @@ class FeatureListener implements EventSubscriberInterface
     protected $repository;
     protected $auth;
     protected $urlPattern;
+    protected $commentGenerator;
     protected $result;
-    private $statuses = array(
-        StepEvent::PASSED      => 'Passed',
-        StepEvent::SKIPPED     => 'Skipped',
-        StepEvent::PENDING     => 'Pending',
-        StepEvent::UNDEFINED   => 'Undefined',
-        StepEvent::FAILED      => 'Failed'
-    );
     private $labels = array(
         StepEvent::PASSED      => array('name' => 'passed', 'color' => '02e10c'),
         StepEvent::SKIPPED     => array('name' => 'skipped', 'color' => 'ffcc00'),
@@ -35,25 +30,28 @@ class FeatureListener implements EventSubscriberInterface
     );
 
 
-    public function __construct(Client $client, $user, $repository, array $auth, $urlPattern)
+    public function __construct(
+        Client $client,
+        $user,
+        $repository,
+        array $auth,
+        $urlPattern,
+        CommentManager $commentManager
+    )
     {
-        $this->client     = $client;
-        $this->user       = $user;
-        $this->repository = $repository;
-        $this->auth       = $auth;
-        $this->urlPattern = $urlPattern;
+        $this->client         = $client;
+        $this->user           = $user;
+        $this->repository     = $repository;
+        $this->auth           = $auth;
+        $this->urlPattern     = $urlPattern;
+        $this->commentManager = $commentManager;
     }
 
     public static function getSubscribedEvents()
     {
-        $events = array('afterScenario', 'afterFeature');
+        $events = array('afterFeature');
 
         return array_combine($events, $events);
-    }
-
-    public function afterScenario(ScenarioEvent $event)
-    {
-        $this->result[$event->getScenario()->getTitle()] = $this->statuses[$event->getResult()];
     }
 
     public function afterFeature(FeatureEvent $event)
@@ -65,27 +63,10 @@ class FeatureListener implements EventSubscriberInterface
         }
         $issueNumber = $matches[3];
 
-        $loader = new \Twig_Loader_Filesystem(__DIR__.'/../views');
-        $twig = new \Twig_Environment($loader, array());
-
-        $comment = $twig->render('result.md.twig', array(
-            'run_date' => new \DateTime(),
-            'results' => $this->result,
-        ));
 
         $this->authenticate();
-        $this->postComment($comment, $issueNumber);
-        $this->markIssue($event->getResult(), $issueNumber);
-    }
-
-    private function postComment($message, $number)
-    {
-        return $this->client->api('issue')->comments()->create($this->user, $this->repository, $number, array('body' => $message));
-    }
-
-    private function markIssue($featureResult, $issueNumber)
-    {
-        return $this->setIssueLabel($this->labels[$featureResult], $issueNumber);
+        $this->commentManager->handle($issueNumber);
+        //$this->setIssueLabel($this->labels($event->getResult()), $issueNumber);
     }
 
     private function setIssueLabel($label, $issueNumber)

@@ -5,6 +5,7 @@
 
     <parameters>
         <parameter key="behat.github_extension.listener.feature.class">Behat\GithubExtension\Listener\FeatureListener</parameter>
+        <parameter key="behat.github_extension.listener.comment_data_collector.class">Behat\GithubExtension\DataCollector\CommentDataCollector</parameter>
     </parameters>
 
     <services>
@@ -14,11 +15,14 @@
             <argument type="string">%behat.github_extension.user%</argument>
             <argument type="string">%behat.github_extension.repository%</argument>
             <argument type="string">%behat.github_extension.auth%</argument>
-            <argument type="string">%behat.github_extension.github_issue.html_url_pattern%</argument>
-            <argument type="service" id="behat.github_extension.cache.feature_suite" />
+            <argument type="string">%behat.github_extension.github_issue.url_pattern%</argument>
+            <argument type="service" id="behat.github_extension.issue.comment_manager" />
             <tag name="behat.event_subscriber" priority="0" />
         </service>
 
+        <service id="behat.github_extension.listener.comment_data_collector" class="%behat.github_extension.listener.comment_data_collector.class%">
+            <tag name="behat.event_subscriber" priority="0" />
+        </service>
     </services>
 
 </container>
