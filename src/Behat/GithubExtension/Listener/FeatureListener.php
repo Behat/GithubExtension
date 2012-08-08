@@ -19,7 +19,7 @@ class FeatureListener implements EventSubscriberInterface
     protected $repository;
     protected $auth;
     protected $urlPattern;
-    protected $commentGenerator;
+    protected $commentManager;
     protected $result;
     private $labels = array(
         StepEvent::PASSED      => array('name' => 'passed', 'color' => '02e10c'),
