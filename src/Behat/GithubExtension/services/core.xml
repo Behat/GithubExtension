@@ -12,6 +12,8 @@
         <parameter key="behat.github_extension.issue.comment_manager.class">Behat\GithubExtension\Issue\CommentManager</parameter>
         <parameter key="behat.github_extension.issue.label_manager.class">Behat\GithubExtension\Issue\LabelManager</parameter>
         <parameter key="behat.github_extension.github_issue.url_pattern">#^https?://github.com/(.*)/(.*)/issues/(\d+)#</parameter>
+        <parameter key="behat.github_extension.issue.twig_generator.class">Behat\GithubExtension\Issue\TwigGenerator</parameter>
+        <parameter key="behat.github_extension.issue.generator.view.path">views</parameter>
         <parameter key="behat.github_extension.user"></parameter>
         <parameter key="behat.github_extension.repository"></parameter>
         <parameter key="behat.github_extension.auth" type="collection"></parameter>
@@ -43,6 +45,7 @@
         <service id="behat.github_extension.issue.comment_manager" class="%behat.github_extension.issue.comment_manager.class%">
             <argument type="service" id="behat.github_extension.listener.comment_data_collector" />
             <argument type="service" id="behat.github_extension.github.client" />
+            <argument type="service" id="behat.github_extension.issue.twig_generator" />
             <argument type="string">%behat.github_extension.user%</argument>
             <argument type="string">%behat.github_extension.repository%</argument>
         </service>
@@ -52,6 +55,10 @@
             <argument type="service" id="behat.github_extension.github.client" />
             <argument type="string">%behat.github_extension.user%</argument>
             <argument type="string">%behat.github_extension.repository%</argument>
+        </service>
+
+        <service id="behat.github_extension.issue.twig_generator" class="%behat.github_extension.issue.twig_generator.class%">
+            <argument type="string">%behat.github_extension.issue.generator.view.path%</argument>
         </service>
 
     </services>
