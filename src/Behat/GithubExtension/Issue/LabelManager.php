@@ -37,7 +37,8 @@ class LabelManager implements ManagerInterface
     {
         $hasCorrectLabel = false;
         $issueLabels     = $this->client->api('issue')->labels()->all($this->user, $this->repository, $issueNumber);
-        $featureLabel   = $this->labels[$this->dataCollector->getFeatureResult()];
+        $featureLabel    = $this->labels[$this->dataCollector->getFeatureResult()];
+
         if($this->containsLabel($featureLabel, $issueLabels)) {
             $hasCorrectLabel = true;
         }

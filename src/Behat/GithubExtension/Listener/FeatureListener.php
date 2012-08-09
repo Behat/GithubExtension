@@ -21,6 +21,7 @@ class FeatureListener implements EventSubscriberInterface
     protected $urlPattern;
     protected $commentManager;
     protected $labelManager;
+    protected $authenticated = false;
 
     public function __construct(
         Client $client,
@@ -28,7 +29,8 @@ class FeatureListener implements EventSubscriberInterface
         $repository,
         array $auth,
         $urlPattern,
-        CommentManager $commentManager
+        ManagerInterface $commentManager,
+        ManagerInterface $labelManager
     )
     {
         $this->client         = $client;
@@ -56,7 +58,11 @@ class FeatureListener implements EventSubscriberInterface
         }
         $issueNumber = $matches[3];
 
-        $this->authenticate();
+        // Necessary or other calls to the githup api will return content of https://github.com/500 (strange...)
+        if (!$this->authenticated) {
+            $this->authenticate();
+        }
+
         $this->commentManager->handle($issueNumber);
         $this->labelManager->handle($issueNumber);
     }
@@ -68,6 +74,8 @@ class FeatureListener implements EventSubscriberInterface
         } else {
             $this->client->authenticate($this->auth['username'], $this->auth['password'], Client::AUTH_HTTP_PASSWORD);
         }
+
+        $this->authenticated = true;
     }
 }
 
