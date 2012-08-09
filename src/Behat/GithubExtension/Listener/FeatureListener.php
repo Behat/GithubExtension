@@ -28,8 +28,7 @@ class FeatureListener implements EventSubscriberInterface
         $repository,
         array $auth,
         $urlPattern,
-        ManagerInterface $commentManager,
-        ManagerInterface $labelManager
+        CommentManager $commentManager
     )
     {
         $this->client         = $client;
