@@ -2,7 +2,7 @@
 
 namespace Behat\GithubExtension\Issue;
 
-use Behat\GithubExtension\DataCollector\CommentDataCollector;
+use Behat\GithubExtension\DataCollector\IssueDataCollector;
 use Github\Client;
 
 class CommentManager implements ManagerInterface
@@ -13,7 +13,7 @@ class CommentManager implements ManagerInterface
     private $repository;
 
     public function __construct(
-        CommentDataCollector $dataCollector,
+        IssueDataCollector $dataCollector,
         Client $client,
         $user,
         $repository

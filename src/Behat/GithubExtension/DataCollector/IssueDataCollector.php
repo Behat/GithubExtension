@@ -5,8 +5,9 @@ namespace Behat\GithubExtension\DataCollector;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Behat\Behat\Event\StepEvent;
 use Behat\Behat\Event\ScenarioEvent;
+use Behat\Behat\Event\FeatureEvent;
 
-class CommentDataCollector implements EventSubscriberInterface
+class IssueDataCollector implements EventSubscriberInterface
 {
     private $statuses = array(
         StepEvent::PASSED      => 'Passed',
@@ -15,11 +16,12 @@ class CommentDataCollector implements EventSubscriberInterface
         StepEvent::UNDEFINED   => 'Undefined',
         StepEvent::FAILED      => 'Failed'
     );
+    private $featureResult  = StepEvent::FAILED;
     private $scenarioResult = array();
 
     public static function getSubscribedEvents()
     {
-        $events = array('afterScenario');
+        $events = array('afterScenario', 'afterFeature');
 
         return array_combine($events, $events);
     }
@@ -29,9 +31,19 @@ class CommentDataCollector implements EventSubscriberInterface
         return $this->scenarioResult;
     }
 
+    public function getFeatureResult()
+    {
+        return $this->featureResult;
+    }
+
     public function afterScenario(ScenarioEvent $event)
     {
         $this->scenarioResult[$event->getScenario()->getTitle()] =
             $this->statuses[$event->getResult()];
+    }
+
+    public function afterFeature(FeatureEvent $event)
+    {
+        $this->featureResult = $event->getResult();
     }
 }
