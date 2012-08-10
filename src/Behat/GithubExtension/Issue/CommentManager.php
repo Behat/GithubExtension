@@ -4,9 +4,17 @@ namespace Behat\GithubExtension\Issue;
 
 use Behat\GithubExtension\DataCollector\IssueDataCollector;
 use Github\Client;
+use Behat\Behat\Event\StepEvent;
 
 class CommentManager implements ManagerInterface
 {
+    private $statuses = array(
+        StepEvent::PASSED    => 'Passed',
+        StepEvent::SKIPPED   => 'Skipped',
+        StepEvent::PENDING   => 'Pending',
+        StepEvent::UNDEFINED => 'Undefined',
+        StepEvent::FAILED    => 'Failed'
+    );
     private $dataCollector;
     private $client;
     private $generator;
@@ -30,10 +38,19 @@ class CommentManager implements ManagerInterface
 
     public function handle($issueNumber)
     {
-        $result  = $this->dataCollector->getScenarioResult();
-        $comment = $this->generator->render($result);
+        $results = $this->dataCollector->getScenarioResult();
+        $comment = $this->generator->render($this->createResult($results));
 
         return $this->postComment($issueNumber, $comment);
+    }
+
+    private function createResult(array $results)
+    {
+        foreach ($results as $scenario => $result) {
+            $results[$scenario] = $this->statuses[$result];
+        }
+
+        return $results;
     }
 
     private function postComment($issueNumber, $comment)

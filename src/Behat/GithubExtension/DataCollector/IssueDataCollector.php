@@ -9,13 +9,6 @@ use Behat\Behat\Event\FeatureEvent;
 
 class IssueDataCollector implements EventSubscriberInterface
 {
-    private $statuses = array(
-        StepEvent::PASSED      => 'Passed',
-        StepEvent::SKIPPED     => 'Skipped',
-        StepEvent::PENDING     => 'Pending',
-        StepEvent::UNDEFINED   => 'Undefined',
-        StepEvent::FAILED      => 'Failed'
-    );
     private $featureResult  = StepEvent::FAILED;
     private $scenarioResult = array();
 
@@ -38,8 +31,7 @@ class IssueDataCollector implements EventSubscriberInterface
 
     public function afterScenario(ScenarioEvent $event)
     {
-        $this->scenarioResult[$event->getScenario()->getTitle()] =
-            $this->statuses[$event->getResult()];
+        $this->scenarioResult[$event->getScenario()->getTitle()] = $event->getResult();
     }
 
     public function afterFeature(FeatureEvent $event)
