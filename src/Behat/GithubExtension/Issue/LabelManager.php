@@ -5,39 +5,41 @@ namespace Behat\GithubExtension\Issue;
 use Github\Client;
 use Behat\Behat\Event\StepEvent;
 use Behat\GithubExtension\DataCollector\IssueDataCollector;
+use Behat\Gherkin\Node\FeatureNode;
 
 class LabelManager implements ManagerInterface
 {
-    private $dataCollector;
+    private $urlExtractor;
     private $client;
     private $user;
     private $repository;
+    private $issueNumber;
     private $labels = array(
-        StepEvent::PASSED      => array('name' => 'passed', 'color' => '02e10c'),
-        StepEvent::SKIPPED     => array('name' => 'skipped', 'color' => 'ffcc00'),
-        StepEvent::PENDING     => array('name' => 'pending', 'color' => 'ffcc00'),
-        StepEvent::UNDEFINED   => array('name' => 'undefined', 'color' => 'ffcc00'),
-        StepEvent::FAILED      => array('name' => 'failed', 'color' => 'e10c02')
+        StepEvent::PASSED      => array('name' => 'passed',     'color' => '02e10c'),
+        StepEvent::SKIPPED     => array('name' => 'skipped',    'color' => '49afcd'),
+        StepEvent::PENDING     => array('name' => 'pending',    'color' => 'ffcc00'),
+        StepEvent::UNDEFINED   => array('name' => 'undefined',  'color' => 'ffcc00'),
+        StepEvent::FAILED      => array('name' => 'failed',     'color' => 'e10c02')
     );
 
     public function __construct(
-        IssueDataCollector $dataCollector,
-        Client $client,
-        $user,
-        $repository
+        UrlExtractor $urlExtractor,
+        Client $client
     )
     {
-        $this->dataCollector = $dataCollector;
-        $this->client        = $client;
-        $this->user          = $user;
-        $this->repository    = $repository;
+        $this->urlExtractor = $urlExtractor;
+        $this->client       = $client;
     }
 
-    public function handle($issueNumber)
+    public function handle(FeatureNode $feature, array $result)
     {
-        $hasCorrectLabel = false;
-        $issueLabels     = $this->client->api('issue')->labels()->all($this->user, $this->repository, $issueNumber);
-        $featureLabel    = $this->labels[$this->dataCollector->getFeatureResult()];
+        $hasCorrectLabel   = false;
+        $this->issueNumber = $this->urlExtractor->getIssueNumber($feature->getFile());
+        $this->user        = $this->urlExtractor->getUser($feature->getFile());
+        $this->repository  = $this->urlExtractor->getRepository($feature->getFile());
+
+        $issueLabels  = $this->client->api('issue')->labels()->all($this->user, $this->repository, $this->issueNumber);
+        $featureLabel = $this->labels[$result['feature']];
 
         if($this->containsLabel($featureLabel, $issueLabels)) {
             $hasCorrectLabel = true;
@@ -47,7 +49,7 @@ class LabelManager implements ManagerInterface
 
         if (!$hasCorrectLabel || ($hasCorrectLabel && count($reservedLabels) > 1)) {
             foreach ($reservedLabels as $reservedLabel) {
-                $this->client->api('issue')->labels()->remove($this->user, $this->repository, $issueNumber, $reservedLabel['name']);
+                $this->client->api('issue')->labels()->remove($this->user, $this->repository, $this->issueNumber, $reservedLabel['name']);
             }
 
             return $this
@@ -57,7 +59,7 @@ class LabelManager implements ManagerInterface
                 ->add(
                     $this->user,
                     $this->repository,
-                    $issueNumber,
+                    $this->issueNumber,
                     $this->findOrCreateLabel($featureLabel)
                 )
             ;

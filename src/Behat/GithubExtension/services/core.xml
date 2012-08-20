@@ -9,11 +9,6 @@
         <parameter key="behat.github_extension.guerkin_loader.class">Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.class">Behat\GithubExtension\Cache\FeatureSuiteCache</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.path">/tmp</parameter>
-        <parameter key="behat.github_extension.issue.comment_manager.class">Behat\GithubExtension\Issue\CommentManager</parameter>
-        <parameter key="behat.github_extension.issue.label_manager.class">Behat\GithubExtension\Issue\LabelManager</parameter>
-        <parameter key="behat.github_extension.github_issue.url_pattern">#^https?://github.com/(.*)/(.*)/issues/(\d+)#</parameter>
-        <parameter key="behat.github_extension.issue.twig_generator.class">Behat\GithubExtension\Issue\TwigGenerator</parameter>
-        <parameter key="behat.github_extension.issue.generator.view.path">views</parameter>
         <parameter key="behat.github_extension.user"></parameter>
         <parameter key="behat.github_extension.repository"></parameter>
         <parameter key="behat.github_extension.auth" type="collection"></parameter>

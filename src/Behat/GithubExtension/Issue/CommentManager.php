@@ -5,6 +5,7 @@ namespace Behat\GithubExtension\Issue;
 use Behat\GithubExtension\DataCollector\IssueDataCollector;
 use Github\Client;
 use Behat\Behat\Event\StepEvent;
+use Behat\Gherkin\Node\FeatureNode;
 
 class CommentManager implements ManagerInterface
 {
@@ -15,45 +16,40 @@ class CommentManager implements ManagerInterface
         StepEvent::UNDEFINED => 'Undefined',
         StepEvent::FAILED    => 'Failed'
     );
-    private $dataCollector;
+    private $urlExtractor;
     private $client;
     private $generator;
-    private $user;
-    private $repository;
 
     public function __construct(
-        IssueDataCollector $dataCollector,
+        UrlExtractor $urlExtractor,
         Client $client,
-        GeneratorInterface $generator,
-        $user,
-        $repository
+        GeneratorInterface $generator
     )
     {
-        $this->dataCollector = $dataCollector;
-        $this->client        = $client;
-        $this->generator     = $generator;
-        $this->user          = $user;
-        $this->repository    = $repository;
+        $this->urlExtractor = $urlExtractor;
+        $this->client       = $client;
+        $this->generator    = $generator;
     }
 
-    public function handle($issueNumber)
+    public function handle(FeatureNode $feature, array $results)
     {
-        $results = $this->dataCollector->getScenarioResult();
         $comment = $this->generator->render($this->createResult($results));
 
-        return $this->postComment($issueNumber, $comment);
+        return $this->postComment($feature, $comment);
     }
 
     private function createResult(array $results)
     {
-        foreach ($results as $scenario => $result) {
-            $results[$scenario] = $this->statuses[$result];
+        $res = array();
+
+        foreach ($results['scenarios'] as $scenario => $result) {
+            $res[$scenario] = $this->statuses[$result];
         }
 
-        return $results;
+        return $res;
     }
 
-    private function postComment($issueNumber, $comment)
+    private function postComment(FeatureNode $feature, $comment)
     {
         if (empty($comment)) {
             throw new \InvalidArgumentException(
@@ -66,9 +62,9 @@ class CommentManager implements ManagerInterface
             ->api('issue')
             ->comments()
             ->create(
-                $this->user,
-                $this->repository,
-                $issueNumber,
+                $this->urlExtractor->getUser($feature->getFile()),
+                $this->urlExtractor->getRepository($feature->getFile()),
+                $this->urlExtractor->getIssueNumber($feature->getFile()),
                 array('body' => $comment)
             )
         ;

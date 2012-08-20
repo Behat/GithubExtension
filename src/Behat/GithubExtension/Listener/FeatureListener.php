@@ -15,56 +15,52 @@ use Behat\GithubExtension\Issue\ManagerInterface;
 class FeatureListener implements EventSubscriberInterface
 {
     protected $client;
-    protected $user;
-    protected $repository;
     protected $auth;
-    protected $urlPattern;
     protected $commentManager;
     protected $labelManager;
     protected $authenticated = false;
+    protected $result = array();
 
     public function __construct(
         Client $client,
-        $user,
-        $repository,
         array $auth,
-        $urlPattern,
         ManagerInterface $commentManager,
         ManagerInterface $labelManager
     )
     {
         $this->client         = $client;
-        $this->user           = $user;
-        $this->repository     = $repository;
         $this->auth           = $auth;
-        $this->urlPattern     = $urlPattern;
         $this->commentManager = $commentManager;
         $this->labelManager   = $labelManager;
     }
 
     public static function getSubscribedEvents()
     {
-        $events = array('afterFeature');
+        $events = array('afterScenario', 'afterFeature');
 
         return array_combine($events, $events);
+    }
+
+    public function afterScenario(ScenarioEvent $event)
+    {
+        $this->result['scenarios'][$event->getScenario()->getTitle()] = $event->getResult();
     }
 
     public function afterFeature(FeatureEvent $event)
     {
         $feature = $event->getFeature();
 
-        if (!preg_match($this->urlPattern, $feature->getFile(), $matches)) {
-            return;
-        }
-        $issueNumber = $matches[3];
+        $this->result['feature'] = $event->getResult();
 
         // Necessary or other calls to the githup api will return content of https://github.com/500 (strange...)
         if (!$this->authenticated) {
             $this->authenticate();
         }
 
-        $this->commentManager->handle($issueNumber);
-        $this->labelManager->handle($issueNumber);
+        $this->commentManager->handle($feature, $this->result);
+        $this->labelManager->handle($feature, $this->result);
+
+        $this->result = array();
     }
 
     private function authenticate()
