@@ -32,20 +32,25 @@ class Extension implements ExtensionInterface
             $container->setParameter('behat.github_extension.repository', $config['repository']);
         }
 
-        if (!$config['write_comments']) {
-            return;
+        if (isset($config['cache_path'])) {
+            $container->setParameter('behat.github_extension.cache.feature_suite.path', $config['cache_path']);
         }
-
-        $loader->load('listener.xml');
 
         if (isset($config['auth'])) {
             $auth = array(
+                'always'   => $config['auth']['always'],
                 'username' => $config['auth']['username'],
                 'password' => $config['auth']['password'],
                 'token'    => $config['auth']['token'],
             );
             $container->setParameter('behat.github_extension.auth', $auth);
         }
+
+        if (!$config['write_comments']) {
+            return;
+        }
+
+        $loader->load('listener.xml');
     }
 
     /**
@@ -57,17 +62,17 @@ class Extension implements ExtensionInterface
     {
         $builder->
             children()->
-                scalarNode('repository')->
-                    defaultNull()->
-                end()->
                 scalarNode('user')->
                     defaultNull()->
                 end()->
-                scalarNode('password')->
+                scalarNode('repository')->
                     defaultNull()->
                 end()->
                 scalarNode('github_issue_html_url_pattern')->
                     defaultValue('#^https?://github.com/(.*)/(.*)/issues/(\d+)#')->
+                end()->
+                scalarNode('cache_path')->
+                    defaultValue('.git')->
                 end()->
                 booleanNode('write_comments')->
                     defaultValue(false)->
@@ -76,6 +81,9 @@ class Extension implements ExtensionInterface
                     children()->
                         scalarNode('username')->
                             defaultNull()->
+                        end()->
+                        booleanNode('always')->
+                            defaultFalse()->
                         end()->
                         scalarNode('password')->
                             defaultNull()->
