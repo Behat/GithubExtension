@@ -1,4 +1,7 @@
 # Behat Github Extension
+
+[![Build Status](https://secure.travis-ci.org/Behat/GithubExtension.png)](http://travis-ci.org/Behat/GithubExtension)
+
 This extension provides a gherkin loader which allows you to load your feature suite from Github issues.
 It also allows you to:
  - automatically comment your issue/feature with the result of the feature suite execution.
