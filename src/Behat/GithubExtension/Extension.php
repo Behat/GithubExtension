@@ -25,11 +25,13 @@ class Extension implements ExtensionInterface
         if (isset($config['user'])) {
             $container->setParameter('behat.github_extension.user', $config['user']);
         }
+
         if (isset($config['repository'])) {
             $container->setParameter('behat.github_extension.repository', $config['repository']);
         }
-        if (isset($config['github_issue_html_url_pattern'])) {
-            $container->setParameter('behat.github_extension.repository', $config['repository']);
+
+        if (isset($config['github_issue_url_pattern'])) {
+            $container->setParameter('behat.github_extension.github_issue_url_pattern', $config['github_issue_url_pattern']);
         }
 
         if (isset($config['cache_path'])) {
@@ -37,20 +39,13 @@ class Extension implements ExtensionInterface
         }
 
         if (isset($config['auth'])) {
-            $auth = array(
-                'always'   => $config['auth']['always'],
-                'username' => $config['auth']['username'],
-                'password' => $config['auth']['password'],
-                'token'    => $config['auth']['token'],
-            );
-            $container->setParameter('behat.github_extension.auth', $auth);
+            $container->setParameter('behat.github_extension.auth', $config['auth']);
         }
 
-        if (!$config['write_comments']) {
-            return;
+        if ($config['write_comments']) {
+            $loader->load('listener.xml');
         }
 
-        $loader->load('listener.xml');
     }
 
     /**
@@ -68,7 +63,7 @@ class Extension implements ExtensionInterface
                 scalarNode('repository')->
                     defaultNull()->
                 end()->
-                scalarNode('github_issue_html_url_pattern')->
+                scalarNode('github_issue_url_pattern')->
                     defaultValue('#^https?://github.com/(.*)/(.*)/issues/(\d+)#')->
                 end()->
                 scalarNode('cache_path')->
