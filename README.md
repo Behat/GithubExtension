@@ -42,7 +42,7 @@ default:
 ```
 
 ### Private repository
-
+Generate a token like so: `curl -u<username> -X POST "https://api.github.com/authorizations" -d"{\"scopes\": [\"repo\"]}"`
 ## Usage
 If you just want to run the whole test:
 ```
