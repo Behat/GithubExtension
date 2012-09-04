@@ -27,7 +27,7 @@
 
     "require": {
         "php":                       ">=5.4",
-        "behat/behat":               ">=2.4.0,<2.5.0-dev",
+        "behat/behat":               ">=2.4.4,<2.5.0-dev",
         "knplabs/github-api":        "dev-master",
         "twig/twig":                 "1.9.*"
     },

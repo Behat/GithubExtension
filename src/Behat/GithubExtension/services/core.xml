@@ -8,6 +8,7 @@
         <parameter key="behat.github_extension.github.client.class">Behat\GithubExtension\Github\Client</parameter>
         <parameter key="behat.github_extension.guerkin_loader.class">Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.class">Behat\GithubExtension\Cache\FeatureSuiteCache</parameter>
+        <parameter key="behat.github_extension.console.processor.issue_create.class">Behat\GithubExtension\Console\IssueCreateProcessor</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.path">/tmp</parameter>
         <parameter key="behat.github_extension.user"></parameter>
         <parameter key="behat.github_extension.repository"></parameter>
@@ -38,6 +39,13 @@
 
         <service id="behat.github_extension.cache.feature_suite" class="%behat.github_extension.cache.feature_suite.class%">
             <argument type="string">%behat.github_extension.cache.feature_suite.path%</argument>
+        </service>
+
+        <service id="behat.github_extension.console.processor.issue_create" class="%behat.github_extension.console.processor.issue_create.class%">
+            <argument type="service" id="behat.github_extension.issue.issue_manager" />
+            <argument type="service" id="behat.hook.dispatcher" />
+            <argument type="service" id="behat.formatter.manager" />
+            <tag name="behat.console.processor" priority="0" />
         </service>
 
     </services>

@@ -36,5 +36,10 @@ class Client extends BaseClient
 
         return $this->authenticate($auth['username'], $auth['password'], BaseClient::AUTH_HTTP_PASSWORD);
     }
+
+    public function getIssuesUrl()
+    {
+        return sprintf('https://github.com/%s/%s/issues', $this->user, $this->repository);
+    }
 }
 

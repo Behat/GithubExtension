@@ -6,66 +6,57 @@ use Behat\Gherkin\Node\FeatureNode;
 use Github\Client;
 use Behat\GithubExtension\Issue\UrlExtractor;
 
-class IssueManager implements ManagerInterface
+class IssueManager
 {
     private $client;
     private $urlExtractor;
 
-    public function __construct(
-        Client $client,
-        UrlExtractor $urlExtractor
-    )
+    public function __construct(Client $client, UrlExtractor $urlExtractor, $basePath)
     {
+        $this->basePath     = $this->getBasePath($basePath);
         $this->client       = $client;
         $this->urlExtractor = $urlExtractor;
     }
 
-    public function handle(FeatureNode $feature, array $results)
+    private function getBasePath($basePath)
     {
-        return $this->createIssueIfNotExist($feature);
-    }
-
-    private function createIssueIfNotExist(FeatureNode $feature)
-    {
-        if (null === $issue = $this->getIssue($feature)) {
-            $issue = $this->createIssue($feature);
-
-            // @TODO Automatically update file with issue url
+        if (is_dir($basePath.'/.git')) {
+            return $basePath;
         }
 
-        return $issue;
+        throw new \RuntimeException('No .git directory in '.$basePath);
     }
 
-    /**
-     * Get the github issue from the FeatureNode
-     *
-     * @return string|null the url of the github issue
-     */
-    protected function getIssue(FeatureNode $feature)
+    public function isMappedToGithubIssue(FeatureNode $feature)
     {
         if (is_file($feature->getFile())) {
-            $content = file($feature->getFile(), FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES);
-
-            // if the first line of the feature is a valid github url
-            if (is_array($matches = $this->urlExtractor->getMatches($content[0]))) {
-                return $matches[0];
-            } 
+            $description = $feature->getDescription();
+            if (is_array($matches = $this->urlExtractor->getMatches($description))) {
+                return true;
+            }
         }
 
-        // else if the file of the FeatureNode is a valid github url
         if (is_array($matches = $this->urlExtractor->getMatches($feature->getFile()))) {
-            return $matches[0];
+            return true;
         }
+
+        return false;
     }
 
-    private function createIssue(FeatureNode $feature)
+    public function createIssueFor(FeatureNode $feature)
     {
         $params = array(
             'title' => $this->generateTitle($feature),
             'body'  => $this->generateBody($feature),
         );
 
-        return $this->client->createIssue($params);
+        $response = $this->client->createIssue($params);
+
+        if (isset($response['html_url'])) {
+            return $response['html_url'];
+        }
+
+        throw new \RuntimeException(sprintf('github responded with: %s', print_r($response, true)));
     }
 
     private function generateTitle(FeatureNode $feature)
@@ -76,7 +67,23 @@ class IssueManager implements ManagerInterface
     private function generateBody(FeatureNode $feature)
     {
         if (is_file($feature->getFile())) {
-            return sprintf("```gherkin \n%s \n```", file_get_contents($feature->getFile()));
+
+            return sprintf(
+                "Feature file: %s/blob/master/%s\nEdit: %s/edit/master/%s",
+                $this->client->getIssuesUrl(),
+                $this->getRelativePath($feature),
+                $this->client->getIssuesUrl(),
+                $this->getRelativePath($feature)
+            );
         }
+    }
+
+    private function getRelativePath(FeatureNode $feature)
+    {
+        if (0 === strpos($feature->getFile(), $this->basePath)) {
+            return substr($feature->getFile(), strlen($this->basePath) + 1);
+        }
+
+        return $feature->getFile();
     }
 }

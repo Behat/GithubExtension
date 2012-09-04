@@ -1,5 +1,5 @@
 language: php
-php: 
+php:
   - 5.3
   - 5.4
 
@@ -8,7 +8,6 @@ branches:
     - master
 
 before_script:
-  - curl http://getcomposer.org/installer | php
-  - php composer.phar install --dev
+  - composer install --dev
 
 script: phpunit

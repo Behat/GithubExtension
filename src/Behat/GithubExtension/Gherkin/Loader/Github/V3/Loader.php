@@ -24,7 +24,7 @@ class Loader extends AbstractFileLoader
      */
     public function supports($resource)
     {
-        return true;
+        return empty($resource) || false !== strpos('github.com', $resource);
     }
 
     /**
