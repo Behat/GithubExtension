@@ -5,11 +5,10 @@
 
     <parameters>
         <parameter key="behat.github_extension.issue.github_fetcher.class">Behat\GithubExtension\Issue\GithubFetcher</parameter>
-        <parameter key="behat.github_extension.github.client.class">Github\Client</parameter>
+        <parameter key="behat.github_extension.github.client.class">Behat\GithubExtension\Github\Client</parameter>
         <parameter key="behat.github_extension.guerkin_loader.class">Behat\GithubExtension\Gherkin\Loader\Github\V3\Loader</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.class">Behat\GithubExtension\Cache\FeatureSuiteCache</parameter>
         <parameter key="behat.github_extension.cache.feature_suite.path">/tmp</parameter>
-        <parameter key="behat.github_extension.github_issue.html_url_pattern">#^https?://github.com/(.*)/(.*)/issues/(\d+)#</parameter>
         <parameter key="behat.github_extension.user"></parameter>
         <parameter key="behat.github_extension.repository"></parameter>
         <parameter key="behat.github_extension.auth" type="collection"></parameter>
@@ -32,6 +31,9 @@
         </service>
 
         <service id="behat.github_extension.github.client" class="%behat.github_extension.github.client.class%">
+            <argument type="string">%behat.github_extension.user%</argument>
+            <argument type="string">%behat.github_extension.repository%</argument>
+            <argument>%behat.github_extension.auth%</argument>
         </service>
 
         <service id="behat.github_extension.cache.feature_suite" class="%behat.github_extension.cache.feature_suite.class%">
