@@ -7,6 +7,7 @@ class UrlExtractor
     const USER         = 1;
     const REPOSITORY   = 2;
     const ISSUE_NUMBER = 3;
+
     private $urlPattern;
 
     public function __construct($urlPattern)
@@ -35,7 +36,7 @@ class UrlExtractor
         return $matches[self::ISSUE_NUMBER];
     }
 
-    private function getMatches($url)
+    public function getMatches($url)
     {
         if (!preg_match($this->urlPattern, $url, $matches)) {
             return null;

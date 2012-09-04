@@ -31,6 +31,8 @@
         </service>
 
         <service id="behat.github_extension.github.client" class="%behat.github_extension.github.client.class%">
+            <argument type="string">%behat.github_extension.user%</argument>
+            <argument type="string">%behat.github_extension.repository%</argument>
             <argument>%behat.github_extension.auth%</argument>
         </service>
 

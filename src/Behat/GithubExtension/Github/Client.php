@@ -8,13 +8,24 @@ use Github\Client as BaseClient;
 
 class Client extends BaseClient
 {
-    public function __construct(array $auth, HttpClientInterface $httpClient = null)
+    private $user;
+    private $repository;
+
+    public function __construct($user, $repository, array $auth, HttpClientInterface $httpClient = null)
     {
         parent::__construct($httpClient);
+
+        $this->user       = $user;
+        $this->repository = $repository;
 
         if (true === $auth['always']) {
             $this->configureAuthentication($auth);
         }
+    }
+
+    public function createIssue(array $params)
+    {
+        return $this->api('issue')->create($this->user, $this->repository, $params);
     }
 
     private function configureAuthentication(array $auth)

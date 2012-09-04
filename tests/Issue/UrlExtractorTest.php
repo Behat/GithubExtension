@@ -49,7 +49,7 @@ class UrlExtractorTest extends \PHPUnit_Framework_TestCase
 
     private function getUrlExtractor()
     {
-        $ue = new UrlExtractor('#^https?://github.com/(.*)/(.*)/issues/(\d+)#');
+        $ue = new UrlExtractor('#https?://github.com/(.*)/(.*)/issues/(\d+)#');
 
         return $ue;
     }

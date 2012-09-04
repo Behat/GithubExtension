@@ -15,17 +15,20 @@ use Behat\GithubExtension\Issue\ManagerInterface;
 class FeatureListener implements EventSubscriberInterface
 {
     protected $client;
+    protected $issueManager;
     protected $commentManager;
     protected $labelManager;
     protected $result = array();
 
     public function __construct(
         Client $client,
+        ManagerInterface $issueManager,
         ManagerInterface $commentManager,
         ManagerInterface $labelManager
     )
     {
         $this->client         = $client;
+        $this->issueManager   = $issueManager;
         $this->commentManager = $commentManager;
         $this->labelManager   = $labelManager;
     }
@@ -48,8 +51,9 @@ class FeatureListener implements EventSubscriberInterface
 
         $this->result['feature'] = $event->getResult();
 
-        $this->commentManager->handle($feature, $this->result);
-        $this->labelManager->handle($feature, $this->result);
+        $this->issueManager->handle($feature, $this->result);
+        //$this->commentManager->handle($feature, $this->result);
+        //$this->labelManager->handle($feature, $this->result);
 
         $this->result = array();
     }

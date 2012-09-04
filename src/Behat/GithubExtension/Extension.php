@@ -64,7 +64,7 @@ class Extension implements ExtensionInterface
                     defaultNull()->
                 end()->
                 scalarNode('github_issue_url_pattern')->
-                    defaultValue('#^https?://github.com/(.*)/(.*)/issues/(\d+)#')->
+                    defaultValue('#https?://github.com/(.*)/(.*)/issues/(\d+)#')->
                 end()->
                 scalarNode('cache_path')->
                     defaultValue('.git')->
