@@ -23,7 +23,6 @@ class IssueCreateFormatter extends ConsoleFormatter
 
     public function afterFeature(FeatureEvent $event)
     {
-
         $feature = $event->getFeature();
         if (false === $this->issueManager->isMappedToGithubIssue($feature)) {
             $url = $this->issueManager->createIssueFor($feature);

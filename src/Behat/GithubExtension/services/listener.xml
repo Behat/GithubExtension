@@ -16,36 +16,11 @@
 
     <services>
 
-        <service id="behat.github_extension.issue.url_extractor" class="%behat.github_extension.issue.url_extractor.class%">
-            <argument type="string">%behat.github_extension.github_issue.url_pattern%</argument>
-        </service>
-
         <service id="behat.github_extension.listener.feature" class="%behat.github_extension.listener.feature.class%">
             <argument type="service" id="behat.github_extension.github.client" />
             <argument type="service" id="behat.github_extension.issue.comment_manager" />
             <argument type="service" id="behat.github_extension.issue.label_manager" />
             <tag name="behat.event_subscriber" priority="0" />
-        </service>
-
-        <service id="behat.github_extension.issue.issue_manager" class="%behat.github_extension.issue.issue_manager.class%">
-            <argument type="service" id="behat.github_extension.github.client" />
-            <argument type="service" id="behat.github_extension.issue.url_extractor" />
-            <argument type="string">%behat.paths.base%</argument>
-        </service>
-
-        <service id="behat.github_extension.issue.comment_manager" class="%behat.github_extension.issue.comment_manager.class%">
-            <argument type="service" id="behat.github_extension.issue.url_extractor" />
-            <argument type="service" id="behat.github_extension.github.client" />
-            <argument type="service" id="behat.github_extension.issue.twig_generator" />
-        </service>
-
-        <service id="behat.github_extension.issue.label_manager" class="%behat.github_extension.issue.label_manager.class%">
-            <argument type="service" id="behat.github_extension.issue.url_extractor" />
-            <argument type="service" id="behat.github_extension.github.client" />
-        </service>
-
-        <service id="behat.github_extension.issue.twig_generator" class="%behat.github_extension.issue.twig_generator.class%">
-            <argument type="string">%behat.github_extension.issue.generator.view.path%</argument>
         </service>
 
     </services>
