@@ -73,8 +73,27 @@ The easiest way to keep your suite updated is to use `Composer <http://getcompos
 Configuration
 -------------
 
-First of all you will need to provide several informations to the extensions:
-    
+First of all you will need to provide several informations to the extensions.
+First two parameters can be extracted from your repository url:
+
+    .. code-block:: yaml
+
+        default:
+            # ...
+            extensions:
+                Behat\GithubExtension\Extension:
+                    user: <The repository owner Github username>
+                    repository: <The repository name>
+                    auth:
+                        username: <Your Github username>
+                        password: <Your Github password>
+                        token: <The generated Github token>
+                    write_comments: true|false
+                    apply_labels: true|false
+
+Github token generation
+~~~~~~~~~~~~~~~~~~~~~~~
+Generate a token like so: `curl -u<username> -X POST "https://api.github.com/authorizations" -d"{\"scopes\": [\"repo\"]}"`
 
 
 Usage
@@ -82,93 +101,38 @@ Usage
 
 After installing extension, there would be 2 usage options available for you:
 
-1. If you're on the php 5.4+, you can simply use 
-   ``Behat\Symfony2Extension\Context\KernelDictionary`` trait inside your
-   ``FeatureContext`` or any of its subcontexts. This trait will provide
-   ``getKernel()`` and ``getContainer()`` methods for you.
+1. Start creating issues inside the configured Github repository.
+   Write your behat features directly inside them, and be sure to delete all non-related text.
+   You can benefit of the color highlight syntax feature of Github by placing your feature
+   content between ``` gherkin and ```.
 
-2. Implementing ``Behat\Symfony2Extension\Context\KernelAwareInterface`` with
-   your context or its subcontexts. This will give you more customization options.
-   Also, you can use this mechanism on multiple contexts avoiding the need to call
-   parent contexts from subcontexts when the only thing you need is a kernel instance.
+2. You can also create feature file (as usual) and run the following command:
+   bin/behat --create-issue
+   This will create Github issue for each feature files in your feature directory.
+   It will also print on the console snippets than you'll have to copy/paste inside the related
+   feature files in order to link them to the Github issues.
 
-There's a common thing between those 2 methods. In each of those, target context
-will implement ``setKernel(KernelInterface $kernel)`` method. This method would be
-automatically called **immediately after** each context creation before each scenario.
-After context constructor, but before any instance hook or definition call.
-
-.. note::
-
-    Application kernel will be automatically rebooted between scenarios, so your
-    scenarios would have almost absolutely isolated state.
-
-Initialize Bundle Suite
-~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to start with your feature suite for specific bundle, execute:
-
-.. code-block:: bash
-
-    $ php behat.phar --init @YouBundleName
-
-.. note::
-
-    Extension provides alternative ways to specify bundle:
-
-    .. code-block:: bash
-
-        $ php behat.phar --init src/YourCompany/YourBundleName
-
-Run Bundle Suite
+Run Feature Suite
 ~~~~~~~~~~~~~~~~
 
-In order to run feature suite of specific bundle, execute:
+In order to run feature suite of a specific Github assignee, execute:
 
 .. code-block:: bash
 
-    $ php behat.phar @YouBundleName
+    $ php behat.phar --tags="assignee:<Github username>"
 
-.. note::
-
-    Extension provides alternative ways to specify bundle or even
-    single feature inside it:
-
-    .. code-block:: bash
-
-        $ php behat.phar @YouBundleName/registration.feature
-        $ php behat.phar src/YourCompany/YourBundleName/Features/registration.feature
-
-If you run specific bundle suite quite often, it might be useful to
-use Behat profile for that:
-
-.. code-block:: yaml
-
-    user:
-        # ...
-        extensions:
-            Behat\Symfony2Extension\Extension:
-                bundle: UserBundle
-
-    group:
-        # ...
-        extensions:
-            Behat\Symfony2Extension\Extension:
-                bundle: GroupBundle
-
-Now if you need to run ``UserBundle`` feature suite, you could just execute:
+In order to run feature suite of a specific Github milestone, execute:
 
 .. code-block:: bash
 
-    $ php behat.phar -p=user
+    $ php behat.phar --tags="milestone:<Github milestone name>"
 
-Notice that in this case, you also can avoid bundlename specification for single
-feature run:
+In order to run feature suite of a specific Github label, execute:
 
 .. code-block:: bash
 
-    $ php behat.phar -p=user registration.feature
+    $ php behat.phar --tags="<Github label>"
 
-This will run ``registration.feature`` tests inside ``UserBundle``.
 
 ``symfony2`` Mink Session
 ~~~~~~~~~~~~~~~~~~~~~~~~~
